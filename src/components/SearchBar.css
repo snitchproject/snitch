@@ -1,0 +1,138 @@
+.search-container {
+  position: relative;
+  margin: 64px 0;
+}
+
+.search-bar {
+  display: flex;
+  gap: 16px;
+}
+
+.search-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 20px 50px 20px 24px;
+  font-size: 18px;
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--text);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.clear-button {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.clear-button:hover {
+  opacity: 0.6;
+}
+
+.search-button {
+  padding: 20px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--text);
+  color: var(--bg);
+  border: 2px solid var(--text);
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.search-button:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--input-bg);
+  border: 2px solid var(--border);
+  border-top: none;
+  z-index: 10;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  width: 100%;
+  padding: 16px 24px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--border);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: var(--tag-bg);
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    margin: 40px 0;
+  }
+
+  .search-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-input {
+    padding: 16px 45px 16px 20px;
+    font-size: 16px;
+  }
+
+  .search-button {
+    padding: 16px 32px;
+    font-size: 16px;
+  }
+
+  .suggestion-item {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,41 @@
+:root {
+  --bg: #fafafa;
+  --text: #0f0f0f;
+  --text-secondary: #666;
+  --border: #ddd;
+  --input-bg: #fff;
+  --grade-a: #00b300;
+  --grade-b: #66cc00;
+  --grade-c: #ffaa00;
+  --grade-d: #ff6600;
+  --grade-f: #ff0000;
+  --tag-bg: #e8e8e8;
+  --tag-text: #0f0f0f;
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f0f;
+  --text: #fafafa;
+  --text-secondary: #999;
+  --border: #333;
+  --input-bg: #1a1a1a;
+  --tag-bg: #222;
+  --tag-text: #fafafa;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.2s, color 0.2s;
+}
+
+#root {
+  min-height: 100vh;
+}
