@@ -1,5 +1,0 @@
-export NAVYAI_API_KEY=sk-navy-v7_u9qgg_VCmjQMB9c6TNuFm6VaqJuT3oUhzPjTM-eo
-
-
-
-go run main.go

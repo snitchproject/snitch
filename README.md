@@ -95,3 +95,4 @@ AGPL-3.0 - See LICENSE file for details
 
 If you find Snitch useful, consider supporting development with crypto donations. See the Support section in the app.
 # snitch
+# snitch
