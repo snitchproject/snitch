@@ -58,6 +58,28 @@
   opacity: 0.7;
 }
 
+.score-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.share-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.share-button:hover {
+  opacity: 0.8;
+}
+
 .score-details {
   margin-top: 16px;
   padding: 16px;
@@ -181,6 +203,16 @@
   }
 
   .score-info-toggle {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .score-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .share-button {
     font-size: 12px;
     padding: 6px 12px;
   }

@@ -5,6 +5,7 @@ import './Results.css';
 
 function Results({ data }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   if (data.error) {
     return (
@@ -16,6 +17,36 @@ function Results({ data }) {
 
   const scoreColor = getScoreColor(data.score);
   const { sensitive, moderate, basic } = groupCategories(data.dataCategories);
+
+  const handleShare = async () => {
+    const shareText = `${data.appName} privacy score: ${data.score}/10\n\n${data.explanation}\n\nCheck it out on Snitch:`;
+    const shareUrl = window.location.href;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${data.appName} Privacy Score`,
+          text: shareText,
+          url: shareUrl
+        });
+      } catch (err) {
+        // User cancelled or error - fall back to copy
+        copyToClipboard(shareText + ' ' + shareUrl);
+      }
+    } else {
+      copyToClipboard(shareText + ' ' + shareUrl);
+    }
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   return (
     <div className="results fade-in">
@@ -32,12 +63,20 @@ function Results({ data }) {
             }}
           />
         </div>
-        <button 
-          className="score-info-toggle"
-          onClick={() => setShowDetails(!showDetails)}
-        >
-          {showDetails ? 'Hide details' : 'Why this score?'}
-        </button>
+        <div className="score-actions">
+          <button 
+            className="score-info-toggle"
+            onClick={() => setShowDetails(!showDetails)}
+          >
+            {showDetails ? 'Hide details' : 'Why this score?'}
+          </button>
+          <button 
+            className="share-button"
+            onClick={handleShare}
+          >
+            {copied ? 'Copied!' : 'Share'}
+          </button>
+        </div>
         {showDetails && (
           <div className="score-details">
             {SCORE_DESCRIPTIONS[data.score]}
