@@ -1,0 +1,39 @@
+.github-link {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text);
+  color: var(--bg);
+  text-decoration: none;
+  transition: opacity 0.2s;
+  z-index: 100;
+}
+
+.github-link:hover {
+  opacity: 0.8;
+}
+
+.github-link svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+@media (max-width: 768px) {
+  .github-link {
+    bottom: 20px;
+    left: 20px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .github-link svg {
+    width: 20px;
+    height: 20px;
+  }
+}

@@ -4,6 +4,7 @@ import Results from './components/Results';
 import ThemeToggle from './components/ThemeToggle';
 import InfoSection from './components/InfoSection';
 import LoadingSkeleton from './components/LoadingSkeleton';
+import GitHubLink from './components/GitHubLink';
 import { fetchAppPrivacy, addRecentSearch } from './services/api';
 import './App.css';
 
@@ -54,6 +55,7 @@ function App() {
   return (
     <div className="app">
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
+      <GitHubLink />
       
       <div className="container">
         <header className="header">
