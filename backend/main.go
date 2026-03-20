@@ -272,9 +272,31 @@ func handleAnalyze(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Successfully analyzed %s with score %d", req.App, result.Score)
+	
+	// Send Fluxer webhook notification
+	go sendFluxerWebhook(req.App, result.Score)
+	
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)
+}
+
+func sendFluxerWebhook(appName string, score int) {
+	webhookURL := os.Getenv("FLUXER_WEBHOOK_URL")
+	if webhookURL == "" {
+		return // Skip if not configured
+	}
+
+	payload := map[string]interface{}{
+		"content": fmt.Sprintf("🔍 Someone searched for **%s** - Score: %d/10", appName, score),
+	}
+
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return
+	}
+
+	http.Post(webhookURL, "application/json", bytes.NewBuffer(jsonData))
 }
 
 func main() {
