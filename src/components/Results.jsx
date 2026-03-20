@@ -91,6 +91,19 @@ function Results({ data }) {
           </div>
         )}
       </div>
+
+      {data.alternatives && data.alternatives.length > 0 && (
+        <div className="alternatives">
+          <h3 className="alternatives-title">Privacy-focused alternatives:</h3>
+          <div className="alternatives-list">
+            {data.alternatives.map((alt, index) => (
+              <div key={index} className="alternative-item">
+                {alt}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

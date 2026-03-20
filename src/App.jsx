@@ -3,6 +3,7 @@ import SearchBar from './components/SearchBar';
 import Results from './components/Results';
 import ThemeToggle from './components/ThemeToggle';
 import InfoSection from './components/InfoSection';
+import LoadingSkeleton from './components/LoadingSkeleton';
 import { fetchAppPrivacy, addRecentSearch } from './services/api';
 import './App.css';
 
@@ -37,7 +38,9 @@ function App() {
     } catch (error) {
       setResults({
         error: true,
-        message: "couldn't snitch on this one. try again."
+        message: error.message === 'rate limit exceeded, try again later' 
+          ? 'Too many requests. Slow down and try again in a minute.'
+          : "couldn't snitch on this one. try again."
       });
     } finally {
       setLoading(false);
@@ -87,11 +90,7 @@ function App() {
           <>
             <SearchBar onSearch={handleSearch} loading={loading} />
             
-            {loading && (
-              <div className="loading">
-                snitching<span className="loading-dot"></span>
-              </div>
-            )}
+            {loading && <LoadingSkeleton />}
             {results && <Results data={results} />}
           </>
         )}

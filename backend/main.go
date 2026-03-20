@@ -6,9 +6,12 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"time"
 )
 
 type AnalyzeRequest struct {
@@ -40,13 +43,89 @@ type NavyAIResponse struct {
 }
 
 type AnalysisResult struct {
-	Score      int      `json:"score"`
-	Summary    string   `json:"summary"`
-	Categories []string `json:"categories"`
+	Score        int      `json:"score"`
+	Summary      string   `json:"summary"`
+	Categories   []string `json:"categories"`
+	Alternatives []string `json:"alternatives,omitempty"`
 }
 
 type ErrorResponse struct {
 	Error string `json:"error"`
+}
+
+// Rate limiter
+type RateLimiter struct {
+	visitors map[string]*Visitor
+	mu       sync.RWMutex
+}
+
+type Visitor struct {
+	lastSeen time.Time
+	count    int
+}
+
+var limiter = &RateLimiter{
+	visitors: make(map[string]*Visitor),
+}
+
+func (rl *RateLimiter) getVisitor(ip string) *Visitor {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	v, exists := rl.visitors[ip]
+	if !exists {
+		rl.visitors[ip] = &Visitor{lastSeen: time.Now(), count: 0}
+		return rl.visitors[ip]
+	}
+
+	// Reset count if more than 1 minute has passed
+	if time.Since(v.lastSeen) > time.Minute {
+		v.count = 0
+		v.lastSeen = time.Now()
+	}
+
+	return v
+}
+
+func (rl *RateLimiter) isAllowed(ip string) bool {
+	visitor := rl.getVisitor(ip)
+	
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+	
+	if visitor.count >= 10 { // 10 requests per minute
+		return false
+	}
+	
+	visitor.count++
+	return true
+}
+
+// Cleanup old visitors every 5 minutes
+func (rl *RateLimiter) cleanup() {
+	for {
+		time.Sleep(5 * time.Minute)
+		rl.mu.Lock()
+		for ip, v := range rl.visitors {
+			if time.Since(v.lastSeen) > 5*time.Minute {
+				delete(rl.visitors, ip)
+			}
+		}
+		rl.mu.Unlock()
+	}
+}
+
+func getIP(r *http.Request) string {
+	// Check X-Forwarded-For header first (for proxies/load balancers)
+	forwarded := r.Header.Get("X-Forwarded-For")
+	if forwarded != "" {
+		ips := strings.Split(forwarded, ",")
+		return strings.TrimSpace(ips[0])
+	}
+	
+	// Fall back to RemoteAddr
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	return ip
 }
 
 func setCORSHeaders(w http.ResponseWriter) {
@@ -67,6 +146,15 @@ func handleAnalyze(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(ErrorResponse{Error: "method not allowed"})
+		return
+	}
+
+	// Rate limiting
+	ip := getIP(r)
+	if !limiter.isAllowed(ip) {
+		log.Printf("Rate limit exceeded for IP: %s", ip)
+		w.WriteHeader(http.StatusTooManyRequests)
+		json.NewEncoder(w).Encode(ErrorResponse{Error: "rate limit exceeded, try again later"})
 		return
 	}
 
@@ -95,7 +183,7 @@ func handleAnalyze(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Analyzing app: %s", req.App)
 
-	prompt := fmt.Sprintf("Analyze privacy for \"%s\". Return JSON: {\"score\":1-10 (10=best privacy, 1=worst),\"summary\":\"brief explanation\",\"categories\":[\"data types\"]}", req.App)
+	prompt := fmt.Sprintf("Analyze privacy for \"%s\". Return JSON: {\"score\":1-10 (10=best privacy, 1=worst),\"summary\":\"brief explanation\",\"categories\":[\"data types\"],\"alternatives\":[\"2-3 privacy-focused alternative apps\"]}", req.App)
 
 	navyReq := NavyAIRequest{
 		Model: "gpt-5.2",
@@ -190,6 +278,9 @@ func handleAnalyze(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Start rate limiter cleanup goroutine
+	go limiter.cleanup()
+
 	http.HandleFunc("/analyze", handleAnalyze)
 
 	port := "8080"

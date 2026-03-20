@@ -29,7 +29,8 @@ export const fetchAppPrivacy = async (appName) => {
     appName,
     score: data.score,
     explanation: data.summary,
-    dataCategories: data.categories
+    dataCategories: data.categories,
+    alternatives: data.alternatives || []
   };
   
   cache.set(cacheKey, {
