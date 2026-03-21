@@ -10,6 +10,7 @@
   background: var(--text);
   color: var(--bg);
   text-decoration: none;
+  border-radius: 6px;
   transition: opacity 0.2s;
   z-index: 100;
 }

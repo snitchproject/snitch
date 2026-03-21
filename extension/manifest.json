@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Snitch - App Privacy Checker",
+  "version": "1.0.0",
+  "description": "Check app privacy scores instantly while browsing app stores",
+  "permissions": [
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://apps.apple.com/*",
+        "https://play.google.com/*",
+        "https://chrome.google.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
